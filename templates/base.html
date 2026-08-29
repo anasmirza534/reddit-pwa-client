@@ -1,1 +1,15 @@
-<h1>hello world!</h1>
+{{define "base"}}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{block "title" .}}Reddit PWA{{end}}</title>
+        <link rel="stylesheet" href="/static/water.css" />
+        <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    </head>
+    <body>
+        <main>{{block "content" .}}{{end}}</main>
+    </body>
+</html>
+{{end}}

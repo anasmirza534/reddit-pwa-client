@@ -12,6 +12,7 @@ import (
 func main() {
 	godotenv.Load()
 
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/home", homeHandler)
 	http.HandleFunc("GET /post/{id}", postDetailHandler)
@@ -29,17 +30,23 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	tmpl := template.Must(template.ParseFiles("templates/home.html"))
-	tmpl.Execute(w, list)
+	tmpl := template.Must(template.ParseFiles(
+		"templates/base.html",
+		"templates/home.html",
+	))
+	tmpl.ExecuteTemplate(w, "base", list)
 }
 
 func postDetailHandler(w http.ResponseWriter, r *http.Request) {
 	postId := r.PathValue("id")
-	list, err := reddit.GetPost(postId)
+	detail, err := reddit.GetPost(postId)
 	if err != nil {
 		log.Println(err)
 	}
 
-	tmpl := template.Must(template.ParseFiles("templates/comment.html"))
-	tmpl.Execute(w, list)
+	tmpl := template.Must(template.ParseFiles(
+		"templates/base.html",
+		"templates/comment.html",
+	))
+	tmpl.ExecuteTemplate(w, "base", detail)
 }

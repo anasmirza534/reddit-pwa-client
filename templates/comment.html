@@ -1,0 +1,13 @@
+<h1>{{.Post.Title}}</h1>
+{{range .Comments}}
+  {{template "comment" .}}
+{{end}}
+
+{{define "comment"}}
+<div class="comment">
+  <p>{{.Author}}: {{.Body}} ({{.Score}})</p>
+  {{range .Replies}}
+    {{template "comment" .}}
+  {{end}}
+</div>
+{{end}}

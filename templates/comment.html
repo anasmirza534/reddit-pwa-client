@@ -18,7 +18,10 @@
 {{define "comment"}}
 <div class="comment">
   <p>
-      {{.Author}}: {{.RenderedBody}} — <time class="timeago" data-ts="{{.CreatedUTC}}"></time> ({{.Score}})
+      {{.Author}}:
+      <time class="timeago" data-ts="{{.CreatedUTC}}"></time> ({{.Score}})
+
+      {{.RenderedBody}}
   </p>
 
   {{range .Replies}}

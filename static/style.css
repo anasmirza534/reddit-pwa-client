@@ -1,0 +1,9 @@
+.comment {
+    border-left: 2px solid #555;
+    padding-left: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+.comment .comment {
+    margin-left: 1rem;
+}

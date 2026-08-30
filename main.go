@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/anasmirza534/reddit-pwa-client/internal/reddit"
 	"github.com/joho/godotenv"
@@ -13,14 +14,22 @@ func main() {
 	godotenv.Load()
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/home", homeHandler)
-	http.HandleFunc("GET /post/{id}", postDetailHandler)
+	http.HandleFunc("/", withLogging(homeHandler))
+	http.HandleFunc("/home", withLogging(homeHandler))
+	http.HandleFunc("GET /post/{id}", withLogging(postDetailHandler))
 
 	log.Println("Listening on :8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func withLogging(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next(w, r)
+		log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
 	}
 }
 

@@ -5,16 +5,20 @@
     <time class="timeago" data-ts="{{.Post.CreatedUTC}}"></time>
 </p>
 
-{{if .Post.Selftext}}<p>{{.Post.Selftext}}</p>{{end}}
+{{with .Post.RenderedSelftext}}
+    <p>{{.}}</p>
+{{end}}
+
 {{range .Comments}}
   {{template "comment" .}}
 {{end}}
+
 {{end}}
 
 {{define "comment"}}
 <div class="comment">
   <p>
-      {{.Author}}: {{.Body}} — <time class="timeago" data-ts="{{.CreatedUTC}}"></time> ({{.Score}})
+      {{.Author}}: {{.RenderedBody}} — <time class="timeago" data-ts="{{.CreatedUTC}}"></time> ({{.Score}})
   </p>
 
   {{range .Replies}}

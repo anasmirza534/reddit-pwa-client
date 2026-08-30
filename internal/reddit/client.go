@@ -4,9 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html"
+	"html/template"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type PostListing struct {
@@ -19,17 +23,40 @@ type PostListing struct {
 }
 
 type Post struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Title       string  `json:"title"`
-	Selftext    string  `json:"selftext"`
-	Subreddit   string  `json:"subreddit"`
-	Author      string  `json:"author"`
-	Score       int     `json:"score"`
-	NumComments int     `json:"num_comments"`
-	Thumbnail   string  `json:"thumbnail"`
-	Permalink   string  `json:"permalink"`
-	CreatedUTC  float64 `json:"created_utc"`
+	ID           string  `json:"id"`
+	Name         string  `json:"name"`
+	Title        string  `json:"title"`
+	Selftext     string  `json:"selftext"`
+	Subreddit    string  `json:"subreddit"`
+	Author       string  `json:"author"`
+	Score        int     `json:"score"`
+	NumComments  int     `json:"num_comments"`
+	Thumbnail    string  `json:"thumbnail"`
+	Permalink    string  `json:"permalink"`
+	CreatedUTC   float64 `json:"created_utc"`
+	SelftextHTML string  `json:"selftext_html"`
+}
+
+var sanitizer = bluemonday.UGCPolicy()
+
+// renderHTML unescapes reddit's *_html field. Falls back to escaping the
+// plain-text field when *_html is absent (e.g. certain moderation states).
+func renderHTML(escapedHTML, plainFallback string) template.HTML {
+	if escapedHTML == "" {
+		return template.HTML(html.EscapeString(plainFallback))
+	}
+
+	unescaped := html.UnescapeString(escapedHTML)
+	safe := sanitizer.Sanitize(unescaped)
+	return template.HTML(safe)
+}
+
+func (p Post) RenderedSelftext() template.HTML {
+	return renderHTML(p.SelftextHTML, p.Selftext)
+}
+
+func (c Comment) RenderedBody() template.HTML {
+	return renderHTML(c.BodyHTML, c.Body)
 }
 
 func GetHome() (*PostListing, error) {
@@ -91,6 +118,7 @@ type Comment struct {
 	Name       string    `json:"name"`
 	CreatedUTC float64   `json:"created_utc"`
 	Replies    []Comment `json:"-"`
+	BodyHTML   string    `json:"body_html"`
 }
 
 func (c *Comment) UnmarshalJSON(data []byte) error {

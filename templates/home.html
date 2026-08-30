@@ -6,8 +6,8 @@
         r/{{.Data.Subreddit}} — u/{{.Data.Author}} — <time class="timeago" data-ts="{{.Data.CreatedUTC}}"></time>
     </p>
 
-    {{if .Data.Selftext}}
-    <p>{{.Data.Selftext}}</p>
+    {{with .Data.RenderedSelftext}}
+        <p>{{.}}</p>
     {{end}}
 
     <a href="/post/{{.Data.ID}}">view comments</a>

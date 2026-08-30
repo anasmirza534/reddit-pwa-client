@@ -59,7 +59,7 @@ func (c Comment) RenderedBody() template.HTML {
 	return renderHTML(c.BodyHTML, c.Body)
 }
 
-func GetHome() (*PostListing, error) {
+func GetHome(after string) (*PostListing, error) {
 	cookie := os.Getenv("REDDIT_SESSION_COOKIE")
 	cookie = strings.TrimSpace(cookie)
 	if cookie == "" {
@@ -72,7 +72,12 @@ func GetHome() (*PostListing, error) {
 		return nil, errors.New("Needed Reddit User Name")
 	}
 
-	req, err := http.NewRequest("GET", "https://old.reddit.com/.json?limit=25", nil)
+	url := "https://old.reddit.com/.json?limit=25"
+	if after != "" {
+		url += "&after=" + after
+	}
+
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}

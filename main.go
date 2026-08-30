@@ -72,7 +72,9 @@ func renderError(w http.ResponseWriter, code int, message string) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	list, err := reddit.GetHome()
+	after := r.URL.Query().Get("after")
+
+	list, err := reddit.GetHome(after)
 	if err != nil {
 		log.Println(err)
 		renderError(w, http.StatusInternalServerError, "Could not load reddit")
@@ -83,6 +85,14 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		"templates/base.html",
 		"templates/home.html",
 	))
+
+	if r.Header.Get("HX-Request") == "true" {
+		// htmx request (Load more click) — return just the new posts + next button,
+		// not the whole page shell.
+		tmpl.ExecuteTemplate(w, "postList", list)
+		return
+	}
+
 	tmpl.ExecuteTemplate(w, "base", list)
 }
 

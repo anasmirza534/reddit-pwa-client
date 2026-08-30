@@ -1,4 +1,8 @@
 {{define "content"}}
+{{template "postList" .}}
+{{end}}
+
+{{define "postList"}}
 {{range .Data.Children}}
 <div class="post">
     <h2>{{.Data.Title}}</h2>
@@ -12,5 +16,11 @@
 
     <a href="/post/{{.Data.ID}}">view comments</a>
 </div>
+{{end}}
+
+{{if .Data.After}}
+<button style="margin-top: 10px;" hx-get="/home?after={{.Data.After}}" hx-target="this" hx-swap="outerHTML">
+    Load more
+</button>
 {{end}}
 {{end}}

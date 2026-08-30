@@ -26,5 +26,5 @@ function renderTimeAgo() {
 }
 
 document.addEventListener("DOMContentLoaded", renderTimeAgo);
-document.body.addEventListener("htmx:afterSwap", renderTimeAgo);
+document.body.addEventListener("htmx:after:swap", renderTimeAgo);
 setInterval(renderTimeAgo, 120_000);

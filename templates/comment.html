@@ -1,5 +1,11 @@
 {{define "content"}}
 <h1>{{.Post.Title}}</h1>
+
+<p>
+    <time class="timeago" data-ts="{{.Post.CreatedUTC}}"></time>
+</p>
+
+{{if .Post.Selftext}}<p>{{.Post.Selftext}}</p>{{end}}
 {{range .Comments}}
   {{template "comment" .}}
 {{end}}
@@ -7,7 +13,10 @@
 
 {{define "comment"}}
 <div class="comment">
-  <p>{{.Author}}: {{.Body}} ({{.Score}})</p>
+  <p>
+      {{.Author}}: {{.Body}} — <time class="timeago" data-ts="{{.CreatedUTC}}"></time> ({{.Score}})
+  </p>
+
   {{range .Replies}}
     {{template "comment" .}}
   {{end}}

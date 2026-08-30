@@ -19,15 +19,17 @@ type PostListing struct {
 }
 
 type Post struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Title       string `json:"title"`
-	Subreddit   string `json:"subreddit"`
-	Author      string `json:"author"`
-	Score       int    `json:"score"`
-	NumComments int    `json:"num_comments"`
-	Thumbnail   string `json:"thumbnail"`
-	Permalink   string `json:"permalink"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Title       string  `json:"title"`
+	Selftext    string  `json:"selftext"`
+	Subreddit   string  `json:"subreddit"`
+	Author      string  `json:"author"`
+	Score       int     `json:"score"`
+	NumComments int     `json:"num_comments"`
+	Thumbnail   string  `json:"thumbnail"`
+	Permalink   string  `json:"permalink"`
+	CreatedUTC  float64 `json:"created_utc"`
 }
 
 func GetHome() (*PostListing, error) {
@@ -83,11 +85,12 @@ type CommentListing struct {
 }
 
 type Comment struct {
-	Author  string    `json:"author"`
-	Body    string    `json:"body"`
-	Score   int       `json:"score"`
-	Name    string    `json:"name"`
-	Replies []Comment `json:"-"`
+	Author     string    `json:"author"`
+	Body       string    `json:"body"`
+	Score      int       `json:"score"`
+	Name       string    `json:"name"`
+	CreatedUTC float64   `json:"created_utc"`
+	Replies    []Comment `json:"-"`
 }
 
 func (c *Comment) UnmarshalJSON(data []byte) error {
@@ -109,9 +112,14 @@ func (c *Comment) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(aux.Replies, &nested); err != nil {
 		return err
 	}
+
 	for _, child := range nested.Data.Children {
+		if child.Kind != "t1" {
+			continue // skip "more" stubs
+		}
 		c.Replies = append(c.Replies, child.Data)
 	}
+
 	return nil
 }
 
@@ -179,8 +187,10 @@ func GetPost(postId string) (*PostDetail, error) {
 	}
 	for _, child := range commentListing.Data.Children {
 		if child.Kind != "t1" {
+			// TODO: later we need this in frontend, and load based on user's request
 			continue // skip "more" stubs
 		}
+
 		detail.Comments = append(detail.Comments, child.Data)
 	}
 

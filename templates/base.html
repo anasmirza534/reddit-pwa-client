@@ -7,8 +7,13 @@
         <title>{{block "title" .}}Reddit PWA{{end}}</title>
         <link rel="stylesheet" href="/static/water.css" />
         <script src="/static/htmx.min.js"></script>
+        <script src="/static/timeago.js" defer></script>
     </head>
     <body>
+        <nav>
+            <a href="javascript:history.back()">&larr; Back</a>
+            <a href="/home" style="margin-left: 12px;">Home</a>
+        </nav>
         <main>{{block "content" .}}{{end}}</main>
     </body>
 </html>

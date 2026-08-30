@@ -86,9 +86,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		"templates/home.html",
 	))
 
-	if r.Header.Get("HX-Request") == "true" {
-		// htmx request (Load more click) — return just the new posts + next button,
-		// not the whole page shell.
+	if r.Header.Get("HX-Request") == "true" && r.Header.Get("HX-Boosted") != "true" {
+		// Load more click (plain hx-get, not a boosted nav) — return just the
+		// new posts + next button, not the whole page shell.
 		tmpl.ExecuteTemplate(w, "postList", list)
 		return
 	}

@@ -10,9 +10,9 @@
         <script src="/static/htmx.min.js"></script>
         <script src="/static/timeago.js" defer></script>
     </head>
-    <body>
+    <body hx-boost:inherited="true">
         <nav>
-            <a href="javascript:history.back()">&larr; Back</a>
+            <a href="javascript:history.back()" hx-boost="false">&larr; Back</a>
             <a href="/home" style="margin-left: 12px;">Home</a>
         </nav>
         <main>{{block "content" .}}{{end}}</main>

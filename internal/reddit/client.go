@@ -115,6 +115,7 @@ func (c *Comment) UnmarshalJSON(data []byte) error {
 
 	for _, child := range nested.Data.Children {
 		if child.Kind != "t1" {
+			// TODO: later we need this in frontend, and load based on user's request
 			continue // skip "more" stubs
 		}
 		c.Replies = append(c.Replies, child.Data)
